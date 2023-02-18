@@ -1,0 +1,29 @@
+﻿@page "/users"
+
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">Id</th>
+			<th scope="col">Name</th>
+			<th scope="col">Surname</th>
+			<th scope="col">email</th>
+			<th scope="col">login</th>
+			<th scope="col">created data</th>
+			<th scope="col">max number of ebooks</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in UsersList)
+		{
+			<tr>
+				<td>@item.id</td>
+				<td>@item.name</td>
+				<td>@item.surname</td>
+				<td>@item.email</td>
+				<td>@item.login</td>
+				<td>@item.created_date</td>
+				<td>@item.max_number_ebooks</td>
+			</tr>
+		}
+	</tbody>
+</table>

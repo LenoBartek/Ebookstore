@@ -1,0 +1,128 @@
+﻿@page "/"
+
+@using Blazorise
+
+<PageTitle>Index</PageTitle>
+
+<h1>Ebooks dictionary</h1>
+
+Welcome to our app.
+
+@switch (State)
+{
+    case PageState.Add:
+        break;
+    case PageState.Edit:
+        <div class="alert alert-secondary mb-4 " role="alert">
+            <div class="row">
+                <div class="col-md-1">
+                    <button type="button" class="btn btn-secondary" @onclick="OnCloseEdit">Back</button>
+                </div>
+                <div class="col-md-5 text-right">
+                    <button class="btn btn-primary" @onclick="OnSaveEdit">Save</button>
+                </div>
+            </div>
+        </div>
+
+        <form>
+            <div class="form-group row">
+                <label for="Authors" class="col-sm-2 col-form-label">Authors</label>
+                <div class="col-sm-10">
+                    <InputText class="form-control" @bind-Value="SelectedModel.authors" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="title" class="col-sm-2 col-form-label">Title</label>
+                <div class="col-sm-10">
+                    <InputText class="form-control" @bind-Value="SelectedModel.title" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="publication_year" class="col-sm-2 col-form-label">Publication year</label>
+                <div class="col-sm-2">
+                    <NumericEdit id="publication_year" @bind-Value="SelectedModel.publication_year" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="pages" class="col-sm-2 col-form-label">Pages</label>
+                <div class="col-sm-2">
+                    <NumericEdit id="pages" @bind-Value="SelectedModel.pages" />
+                </div>
+            </div>
+
+        </form>
+
+
+        break;
+    case PageState.Del:
+        break;
+
+    case PageState.Preview:
+        <div class="alert alert-secondary mb-3 " role="alert">
+            <button type="button" class="btn btn-secondary" @onclick="OnClosePdf">Close</button>
+        </div>
+        <div class="mb-3 row text-right">
+            <embed src="./ebooks/GetPdf?fileName=@_filename" width="800px" height="2100px" />
+        </div>
+        break;
+
+    default:
+        <div class="alert alert-secondary mb-4 " role="alert">
+            <div class="row">
+                <div class="col-md-12">
+                    <label>Add ebooks to store:</label>
+                    <label>
+                        <InputFile OnChange="@LoadFiles" multiple accept=".pdf" title="Add ebooks" style="border-color:red" />
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">id</th>
+                    <th scope="col">Authors<input type="text" placeholder="Authors" class="form-control" @bind-value="ebooksFilter.authors" @bind-value:event="oninput" /></th>
+                    <th scope="col">Title<input type="text" placeholder="Title" class="form-control" @bind-value="ebooksFilter.title" @bind-value:event="oninput" /></th>
+                    <th scope="col">Year<input type="int" placeholder="Year" class="form-control" @bind-value="ebooksFilter.publication_year" @bind-value:event="oninput" /></th>
+                    <th scope="col">Pages</th>
+                    <th scope="col">Do</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var item in EBooksStoreList)
+                {
+                    <tr>
+                        <td>@item.id</td>
+                        <td>@item.authors</td>
+                        <td>@item.title</td>
+                        <td>@item.publication_year</td>
+                        <td>@item.pages</td>
+                        <td>
+                            <button class="btn btn-link" type="button" @onclick="@(() => OnEditRow(item))">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                    <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
+                                </svg>
+                            </button>
+
+                            <button type="button" class="btn btn-link p-0" @onclick="@(() => ViewPdf(item))">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
+                                    <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z" />
+                                    <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z" />
+                                </svg>
+                            </button>
+
+                            <button type="button" class="btn btn-link p-0" @onclick="@(() => OnRowDelete(item))">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+                                    <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        break;
+}
+
